@@ -39,19 +39,44 @@
             hint="Episodes per Page"
             label="Episodes per Page"
             persistent-hint
-            style="width: 100px"
             variant="outlined"
           ></v-combobox>
         </v-col>
-        <v-col cols="6">
-          {{
-            `
-            Serien: ${uniqueSeries.length}
-            Episoden: ${episodes.length}
-            Gesehen: ${watchlist.length}
-     `
-
-          }}
+        <v-col cols="5">
+          <v-card elevation="0">
+            <v-card-item>
+              <v-card-title>Stats</v-card-title>
+              <v-card-subtitle>&nbsp;</v-card-subtitle>
+            </v-card-item>
+            <v-card-text>
+              <v-row class="mt-n4">
+                <v-col cols="4 text-center font-weight-bold">Series Stats</v-col>
+                
+                <v-col cols="4 text-center font-weight-bold">Watchtime</v-col>
+              </v-row>
+              <v-row class="mt-n4">
+                <v-col cols="2">Series</v-col>
+                <v-col cols="2 text-right">{{ uniqueSeries.length }}</v-col>
+                <v-divider vertical></v-divider>
+                <v-col cols="2">Avg.</v-col>
+                <v-col cols="2 text-right">{{ "42 m" }}</v-col>
+              </v-row>
+              <v-row class="mt-n4">
+                <v-col cols="2">Episodes</v-col>
+                <v-col cols="2 text-right">{{ episodes.length }}</v-col>
+                <v-divider vertical></v-divider>
+                <v-col cols="2">Total</v-col>
+                <v-col cols="2 text-right">{{ ((episodes.length * 42) / 60) + " h" }}</v-col>
+              </v-row>
+              <v-row class="mt-n4">
+                <v-col cols="2">Watched</v-col>
+                <v-col cols="2 text-right">{{ watchlist.length }}</v-col>
+                <v-divider vertical></v-divider>
+                <v-col cols="2">Seen</v-col>
+                <v-col cols="2 text-right">{{ ((watchlist.length * 42) / 60) + " h" }}</v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
     </v-card-item>
