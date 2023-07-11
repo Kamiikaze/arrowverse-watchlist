@@ -2,7 +2,7 @@
   <v-form
     v-model="form"
     class="pa-4"
-    @submit.prevent="onSubmit"
+    @submit.prevent
   >
     <div class="text-subtitle-1 text-medium-emphasis">Account</div>
     <v-text-field

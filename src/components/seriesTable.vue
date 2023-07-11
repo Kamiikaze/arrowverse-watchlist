@@ -8,10 +8,10 @@
             :items="filters.series"
             chips
             class="ma-2 ml-0"
-            hint="Filter nach Serien"
+            hint="Filter Series"
             item-title="name"
             item-value="value"
-            label="Serien"
+            label="Series"
             multiple
             persistent-hint
           ></v-select>
@@ -20,49 +20,93 @@
           <v-select
             v-model="activeFilters.watched"
             :items="filters.watched"
-            chips
             class="ma-2"
-            hint="Filter nach (un-)gesehenen Serien"
+            clearable
+            hint="Filter Seen-State"
             item-title="name"
             item-value="value"
             label="Status"
-            multiple
             persistent-hint
           ></v-select>
         </v-col>
         <v-col cols="6">
           {{
             `
-            Serien: ${uniqueSeries.size}
+            Serien: ${uniqueSeries.length}
             Episoden: ${episodes.length}
-            Gesehen: ${episodes.filter((ep) => ep.watched).length}
-            `
+            Gesehen: ${watchlist.length}
+     `
+
           }}
         </v-col>
       </v-row>
     </v-card-item>
   </v-card>
-  <!-- :sort-by="[{ key: 'published', order: 'asc' }]" -->
   <v-data-table-virtual
+    v-if="episodes.length > 0"
     :headers="headers"
     :items="filtered"
+    :sort-by="[{ key: 'air_date', order: 'asc' }]"
     class="elevation-1"
+    fixed-header
     height="400"
   >
-    <template v-slot:[`item.watched`]="{ item, index }">
+    <template v-slot:[`item.watched`]="{ item }">
       <v-checkbox-btn
-        v-model="item.columns.watched"
-        @click="updateEntry(item, index)"
-      ></v-checkbox-btn>
+        v-model="item.raw.watched"
+        class="justify-center"
+        @click="updateEntry(item)"
+      >
+        <v-tooltip
+          v-if="item.raw.watched"
+          activator="parent"
+          location="bottom"
+        >{{ 'Seen at: ' + formatDate(item.raw.seenAt, true) }}
+        </v-tooltip>
+      </v-checkbox-btn>
     </template>
-    <template v-slot:[`item.published`]="{ item }">
-      {{ formatDate(item.columns.published) }}
+    <template v-slot:[`item.air_date`]="{ item }">
+      {{ formatDate(item.columns.air_date) }}
+    </template>
+    <template v-slot:[`item.actions`]="{ item }">
+      {{
+
+      }}
+      <v-btn-group>
+        <v-card
+          v-for="(provider, index) in item.raw.providers"
+          :key="index"
+          class="d-flex justify-center align-center flex-row"
+          elevation="0"
+
+        >
+          <v-btn
+            class="ma-1"
+            density="compact"
+            icon
+            small
+            target="_blank"
+            @click="openUrl(item, provider); updateEntry(item)"
+          >
+            <v-img
+              :src="`/src/assets/${provider.name}_icon.svg`"
+              height="24"
+              width="24"
+            ></v-img>
+          </v-btn>
+          <v-tooltip
+            activator="parent"
+            location="bottom"
+          >Watch on {{ provider.name }}
+          </v-tooltip>
+        </v-card>
+      </v-btn-group>
     </template>
   </v-data-table-virtual>
 </template>
 <script>
-import {mapActions, mapStores} from "pinia";
 import {useAppStore} from "@/store/app";
+import {mapActions, mapState, mapStores} from "pinia";
 
 export default {
   data: () => ({
@@ -71,84 +115,101 @@ export default {
       "order": "asc"
     },
     headers: [
-      {title: 'Serie', align: 'start', key: 'serie'},
-      {title: 'Staffel', align: 'start', key: 'season'},
-      {title: 'Episode', align: 'start', key: 'episode'},
-      {title: 'Episode Name', align: 'start', key: 'episode-name'},
-      {title: 'Veröffentlicht', align: 'start', key: 'published'},
-      {title: 'Gesehen', key: 'watched'},
+      {title: 'Serie', align: 'start', key: 'serie', sortable: false},
+      {title: 'Season', align: 'center', key: 'season', width: '50px', sortable: false},
+      {title: 'Episode', align: 'center', key: 'episode', width: '50px', sortable: false},
+      {title: 'Episode Name', align: 'start', key: 'title', sortable: false},
+      {title: 'Aired', align: 'start', key: 'air_date', width: '150px'},
+      {title: 'Seen', align: 'center', key: 'watched', width: '50px', sortable: false},
+      {title: 'Watch Now', align: 'start', key: 'actions', width: '150px', sortable: false},
     ],
-    episodes: [
-      {
-        serie: 'Arrow',
-        season: 3,
-        episode: 10,
-        'episode-name': 'Left Behind',
-        published: '2015-01-21',
-        watched: false,
-      }, {
-        serie: 'Arrow',
-        season: 2,
-        episode: 1,
-        'episode-name': 'Left Behind',
-        published: '2014-01-21',
-        watched: false,
-      }, {
-        serie: 'Game of Thrones',
-        season: 7,
-        episode: 4,
-        'episode-name': 'The Spoils of War',
-        published: '2017-08-06',
-        watched: false,
-      }, {
-        serie: 'Stranger Things',
-        season: 2,
-        episode: 5,
-        'episode-name': 'Dig Dug',
-        published: '2017-10-27',
-        watched: false,
-      }
-    ],
-    filters: {
-      series: ['Arrow', 'Game of Thrones', 'Stranger Things'],
-      watched: [
-        {name: "Gesehen", value: true},
-        {name: "Nicht Gesehen", value: false}
-      ]
-    },
     activeFilters: {
-      series: ['Arrow', 'Game of Thrones', 'Stranger Things'],
-      watched: [true, false]
+      series: [],
+      watched: null
     }
   }),
+  methods: {
+    ...mapActions(useAppStore, ['updateWatchedState', 'getProviderList', 'getProviderUrl']),
+    formatDate(date, showTime = false) {
+      const fDate = new Date(date);
+      const options = {day: '2-digit', month: '2-digit', year: 'numeric'};
+
+      if (showTime) {
+        options.hour = '2-digit';
+        options.minute = '2-digit';
+      }
+
+      return fDate.toLocaleDateString("de-DE", options);
+    },
+    updateEntry(item) {
+      this.updateWatchedState(item)
+    },
+    getWatchedState(item) {
+      const episode = this.watchlist.find((ep) => {
+        return ep.id === item.id
+      })
+      return episode
+
+    },
+    openUrl(item, provider) {
+      console.log(item.raw, provider)
+      const providerUrl = this.getProviderUrl({
+        id: item.raw.id,
+        name: item.raw.serie,
+        season: item.raw.season,
+        episode: item.raw.episode
+      }, provider.name)
+      console.log(providerUrl)
+
+      // window.open(providerUrl, '_blank')
+    }
+  },
   computed: {
     ...mapStores(useAppStore, useAppStore),
+    ...mapState(useAppStore, {
+      episodes: 'getEpisodes',
+      watchlist: 'getWatchlist'
+    }),
+    filters() {
+      return {
+        series: this.uniqueSeries,
+        watched: [
+          {name: "Seen", value: true},
+          {name: "Unseen", value: false}
+        ]
+      }
+    },
     filtered() {
-      return this.episodes.filter((ep) => {
-        return this.activeFilters.series.includes(ep.serie) &&
-          this.activeFilters.watched.includes(ep.watched)
+      let filteredItems = this.episodes
+
+      filteredItems.map((ep) => {
+        const watchState = this.getWatchedState(ep)
+        ep.watched = !!watchState
+        ep.seenAt = watchState?.seenAt
+        ep.providers = this.getProviderList(`${ep.id}-${ep.season}-${ep.episode}`)
+        return ep
       })
+
+      if (this.activeFilters.series.length > 0) {
+        filteredItems = filteredItems.filter((ep) => {
+          return this.activeFilters.series.includes(ep.serie)
+        })
+      }
+      if (this.activeFilters.watched !== null) {
+        filteredItems = filteredItems.filter((ep) => {
+          return this.activeFilters.watched === ep.watched
+        })
+      }
+      return filteredItems
+
     },
     uniqueSeries() {
       const uniques = new Set();
       this.episodes.forEach((ep) => {
         uniques.add(ep.serie)
       })
-      return uniques
+      return Array.from(uniques)
     }
-  },
-  methods: {
-    ...mapActions(useAppStore, ['updateWatchedState']),
-    formatDate(date) {
-      const fDate = new Date(date);
-      const options = {day: '2-digit', month: '2-digit', year: 'numeric'};
-      return fDate.toLocaleDateString("de-DE", options);
-    },
-    updateEntry(item, index) {
-      console.log(index, item, item.columns, !item.columns.watched)
-      this.episodes[index].watched = !item.columns.watched
-      this.updateWatchedState(item.columns)
-    },
   },
 }
 </script>
