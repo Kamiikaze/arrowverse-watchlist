@@ -2,8 +2,22 @@
   <v-form
     v-model="form"
     class="pa-4"
-    @submit.prevent="onSubmit"
+    @submit.prevent
   >
+    <v-alert v-if="alert" :type="alert.type" closable>
+      <p v-if="alert.code === 'auth/email-not-verified'">
+        <v-btn class="ma-0 pa-0 mt-4 text-decoration-underline" density="compact" variant="text"
+               @click="sendVerificationEmail">Resend confirmation
+        </v-btn>
+      </p>
+      <p v-if="alert.code === 'auth/user-not-found'">
+        <span>Don't have an account yet? <br> </span>
+        <v-btn class="ma-0 pa-0 mt-4 text-decoration-underline" density="compact" variant="text"
+               @click="this.$emit('changeTab', 'register')">Register
+        </v-btn>
+      </p>
+      <p v-else>{{ alert.message }}</p>
+    </v-alert>
     <div class="text-subtitle-1 text-medium-emphasis">Account</div>
     <v-text-field
       v-model="userAuth.email"
@@ -72,11 +86,13 @@
 
     <v-btn
       :disabled="!form"
+      :loading="waiting"
       block
       color="success"
       size="large"
       type="submit"
       variant="elevated"
+      @click="doUserAuth"
     >
       Sign In
     </v-btn>
@@ -84,6 +100,10 @@
 </template>
 
 <script>
+import {useAppStore} from "@/store/app";
+import {useAuthStore} from "@/store/auth";
+import {mapActions, mapState} from "pinia";
+
 export default {
   props: {
     method: String
@@ -92,6 +112,7 @@ export default {
     form: false,
     visible: false,
     visible2: false,
+    waiting: false,
     userAuth: {
       email: "",
       pw: "",
@@ -119,9 +140,27 @@ export default {
     },
   }),
   methods: {
-    //
+    ...mapActions(useAuthStore, ['registerUser', 'loginUser', 'sendVerificationEmail']),
+    ...mapActions(useAppStore, ['toggleDialog']),
+    doUserAuth() {
+      if (!this.form) return
+
+      if (this.userAuth.email === '' || this.userAuth.pw === '') return
+      this.waiting = true
+      if (this.method === 'register') {
+        this.registerUser(this.userAuth.email, this.userAuth.pw)
+      } else {
+        this.loginUser(this.userAuth.email, this.userAuth.pw).then((login) => {
+          if (login) {
+            this.toggleDialog()
+          }
+          this.waiting = true
+        })
+      }
+    }
   },
   computed: {
+    ...mapState(useAuthStore, ['alert']),
     passwordMatch() {
       return this.userAuth.pw === this.userAuth.pwconfirm || 'Passwords no dot match'
     }

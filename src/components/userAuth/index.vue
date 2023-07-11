@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    v-model="dialog"
+    v-model="showLoginDialog"
     :persistent="false"
     max-width="50%"
     min-width="25%"
@@ -25,14 +25,17 @@
           </v-window-item>
         </v-window>
 
-        <userForm :method="tab"/>
+        <userForm :method="tab" @changeTab="(method) => this.tab = method"/>
       </v-card-text>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import {mapState} from "pinia";
+
 import authForm from "@/components/userAuth/authForm.vue";
+import {useAppStore} from "@/store/app";
 
 export default {
   name: "UserAuth",
@@ -40,14 +43,21 @@ export default {
     userForm: authForm
   },
   data: () => ({
-    dialog: true,
-    tab: null,
+    tab: 'login',
   }),
   methods: {
     //
   },
   computed: {
-    //
+    ...mapState(useAppStore, ["loginDialog"]),
+    showLoginDialog: {
+      get() {
+        return this.loginDialog;
+      },
+      set(value) {
+        useAppStore().loginDialog = value;
+      }
+    }
   }
 }
 </script>
