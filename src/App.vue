@@ -7,7 +7,6 @@
       <p>Icons by <a href="https://icons8.com"
                      target="_blank">Icons8</a>
       </p>
-      {{ this.$vuetify.locale.current }}
     </v-main>
   </v-app>
 </template>

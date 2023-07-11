@@ -10,8 +10,9 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@awesomegroup/full-con": "file:awesomegroup-full-con-0.2.5.tgz",
+    "@awesomegroup/watch-con": "file:awesomegroup-watch-con-0.3.0.tgz",
     "@mdi/font": "7.0.96",
+    "axios": "^1.4.0",
     "pinia": "^2.0.23",
     "roboto-fontface": "*",
     "vue": "^3.2.0",

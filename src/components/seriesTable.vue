@@ -8,26 +8,40 @@
             :items="filters.series"
             chips
             class="ma-2 ml-0"
-            hint="Filter Series"
+            hint="Select Series to show"
             item-title="name"
             item-value="value"
             label="Series"
             multiple
             persistent-hint
+            variant="outlined"
           ></v-select>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           <v-select
             v-model="activeFilters.watched"
             :items="filters.watched"
             class="ma-2"
             clearable
-            hint="Filter Seen-State"
+            hint="Filter by Seen-State"
             item-title="name"
             item-value="value"
             label="Status"
             persistent-hint
+            variant="outlined"
           ></v-select>
+        </v-col>
+        <v-col cols="2">
+          <v-combobox
+            v-model="activeFilters.itemsPerPage"
+            :items="[10,25, 50, 100, 'All']"
+            class="ma-2"
+            hint="Episodes per Page"
+            label="Episodes per Page"
+            persistent-hint
+            style="width: 100px"
+            variant="outlined"
+          ></v-combobox>
         </v-col>
         <v-col cols="6">
           {{
@@ -42,14 +56,15 @@
       </v-row>
     </v-card-item>
   </v-card>
-  <v-data-table-virtual
+  <v-data-table
     v-if="episodes.length > 0"
     :headers="headers"
     :items="filtered"
+    :items-per-page="activeFilters.itemsPerPage"
+    :loading="false"
     :sort-by="[{ key: 'air_date', order: 'asc' }]"
     class="elevation-1"
     fixed-header
-    height="400"
   >
     <template v-slot:[`item.watched`]="{ item }">
       <v-checkbox-btn
@@ -102,7 +117,7 @@
         </v-card>
       </v-btn-group>
     </template>
-  </v-data-table-virtual>
+  </v-data-table>
 </template>
 <script>
 import {useAppStore} from "@/store/app";
@@ -115,7 +130,7 @@ export default {
       "order": "asc"
     },
     headers: [
-      {title: 'Serie', align: 'start', key: 'serie', sortable: false},
+      {title: 'Serie', align: 'start', key: 'serie', width: '200px', sortable: false},
       {title: 'Season', align: 'center', key: 'season', width: '50px', sortable: false},
       {title: 'Episode', align: 'center', key: 'episode', width: '50px', sortable: false},
       {title: 'Episode Name', align: 'start', key: 'title', sortable: false},
@@ -125,7 +140,8 @@ export default {
     ],
     activeFilters: {
       series: [],
-      watched: null
+      watched: null,
+      itemsPerPage: 10
     }
   }),
   methods: {
