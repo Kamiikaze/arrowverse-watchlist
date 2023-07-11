@@ -1,4 +1,3 @@
-// Utilities
 import {defineStore} from 'pinia'
 
 import importedEpisodes from "@/assets/episodes.json";
@@ -7,8 +6,8 @@ export const useAppStore = defineStore('app', {
   state: () => ({
     watchlist: [{"id": "1412-1-1", "seenAt": 1689010084429}],
     showsData: null,
-    user: null,
     loginDialog: false,
+    language: "en-US",
     // const series = [
     //     {id: 1412, name: "Arrow"},
     //     {id: 60735, name: "The Flash"},
@@ -119,8 +118,8 @@ export const useAppStore = defineStore('app', {
   }),
 
   actions: {
-    getShowsData() {
-
+    setAppLanguage(language) {
+      this.language = language
     },
     updateWatchedState(item) {
       const watchedItem = {
@@ -146,8 +145,8 @@ export const useAppStore = defineStore('app', {
       )
       this.watchlist.splice(index, 1)
     },
-    openDialog() {
-      this.loginDialog = true
+    toggleDialog() {
+      this.loginDialog = !this.loginDialog
     },
     getProviderList(id) {
       const parsedId = id.split("-")[0];
@@ -180,12 +179,6 @@ export const useAppStore = defineStore('app', {
     }
   },
   getters: {
-    isLoggedIn(state) {
-      return state.user !== null
-    },
-    getUser(state) {
-      return state.user
-    },
     getWatchlist(state) {
       return state.watchlist
     },

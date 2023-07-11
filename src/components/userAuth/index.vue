@@ -25,7 +25,7 @@
           </v-window-item>
         </v-window>
 
-        <userForm :method="tab"/>
+        <userForm :method="tab" @changeTab="(method) => this.tab = method"/>
       </v-card-text>
     </v-card>
   </v-dialog>

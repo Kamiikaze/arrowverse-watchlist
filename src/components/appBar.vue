@@ -6,24 +6,32 @@
     <v-spacer></v-spacer>
 
     <v-menu
-      :open-on-hover="isLoggedIn"
+      :open-on-click="isLoggedIn"
     >
       <template v-slot:activator="{ props }">
         <v-btn v-if="isLoggedIn" v-bind="props">
-          {{ getUser.name }}
+          {{ getUser.displayName || getUser.email.split('@')[0] }}
           <v-icon class="ml-2" size="24">mdi-account</v-icon>
         </v-btn>
-        <v-btn v-else @click="openDialog">
+        <v-btn v-else @click="toggleDialog">
           {{ "Login" }}
           <v-icon class="ml-2" size="24">mdi-account</v-icon>
         </v-btn>
       </template>
 
-      <v-list v-if="isLoggedIn">
-        <v-list-item>
-          <v-list-item-title>{{ "Settings" }}</v-list-item-title>
+      <v-list>
+        <v-list-item value="#">
+          <template v-slot:prepend>
+            <v-icon class="mr-4" icon="mdi-cog"></v-icon>
+          </template>
+          <v-list-item-title>{{ "Account" }}</v-list-item-title>
+
         </v-list-item>
-        <v-list-item>
+
+        <v-list-item link @click="logoutUser">
+          <template v-slot:prepend>
+            <v-icon class="mr-4" icon="mdi-logout"></v-icon>
+          </template>
           <v-list-item-title>{{ "Logout" }}</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -37,8 +45,9 @@
 </template>
 
 <script>
-import {mapState} from "pinia";
+import {mapActions, mapState} from "pinia";
 import {useAppStore} from "@/store/app";
+import {useAuthStore} from "@/store/auth";
 
 export default {
   data: () => ({
@@ -52,15 +61,14 @@ export default {
     ],
   }),
   methods: {
+    ...mapActions(useAppStore, ['toggleDialog']),
+    ...mapActions(useAuthStore, ['logoutUser']),
     toggleTheme() {
       this.$vuetify.theme.global.name = this.$vuetify.theme.global.current.dark ? 'light' : 'dark'
     },
-    openDialog() {
-      useAppStore().openDialog()
-    }
   },
   computed: {
-    ...mapState(useAppStore, ['getUser', "isLoggedIn"])
+    ...mapState(useAuthStore, ['getUser', "isLoggedIn"])
   }
 }
 
