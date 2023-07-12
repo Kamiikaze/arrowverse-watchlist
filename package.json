@@ -1,5 +1,6 @@
 {
   "name": "arrowverse-watchlist",
+  "description": "A watchlist for the Arrowverse",
   "version": "0.0.3",
   "scripts": {
     "dev": "vite",
@@ -28,5 +29,50 @@
     "vite": "^4.2.0",
     "vite-plugin-vuetify": "^1.0.0"
   },
-  "homepage": "https://kamiikaze.github.io/arrowverse-watchlist/"
+  "license": "MIT",
+  "author": {
+    "name": "Kamikaze",
+    "url": "https://github.com/Kamiikaze"
+  },
+  "homepage": "https://kamiikaze.github.io/arrowverse-watchlist/",
+  "contributors": [
+    {
+      "name": "Kamikaze",
+      "url": "https://github.com/Kamiikaze"
+    },
+    {
+      "name": "Elschnagoo",
+      "url": "https://github.com/Elschnagoo"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/Kamiikaze/arrowverse-watchlist/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kamiikaze/arrowverse-watchlist.git"
+  },
+  "packageManager": "npm@9.7.2",
+  "browserslist": {
+    "production": [
+      "> 1%",
+      "last 2 versions",
+      "not dead",
+      "not ie 11"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "keywords": [
+    "arrowverse",
+    "watchlist",
+    "vite",
+    "vue",
+    "vuetify",
+    "pinia",
+    "firebase"
+  ]
 }

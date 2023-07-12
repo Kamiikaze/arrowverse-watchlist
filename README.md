@@ -1,6 +1,6 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/kamiikaze/arrowverse-watchlist/badge)](https://www.codefactor.io/repository/github/kamiikaze/arrowverse-watchlist)
 
-# default
+# Arrowverse Watchlist
 
 ## Project setup
 
