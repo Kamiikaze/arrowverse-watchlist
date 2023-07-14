@@ -5,35 +5,29 @@ import vuetify, {transformAssetUrls} from 'vite-plugin-vuetify'
 // Utilities
 import {defineConfig} from 'vite'
 import {fileURLToPath, URL} from 'node:url'
+import eslintPlugin from 'vite-plugin-eslint'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/arrowverse-watchlist/',
-  plugins: [
-    vue({
-      template: {transformAssetUrls}
-    }),
-    // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
-    vuetify({
-      autoImport: true,
-    }),
-  ],
-  define: {'process.env': {}},
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    },
-    extensions: [
-      '.js',
-      '.json',
-      '.jsx',
-      '.mjs',
-      '.ts',
-      '.tsx',
-      '.vue',
+    base: '/arrowverse-watchlist/',
+    plugins: [
+        vue({
+            template: { transformAssetUrls },
+        }),
+        // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
+        vuetify({
+            autoImport: true,
+        }),
+        eslintPlugin(),
     ],
-  },
-  server: {
-    port: 3000,
-  },
+    define: { 'process.env': {} },
+    resolve: {
+        alias: {
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+        },
+        extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue'],
+    },
+    server: {
+        port: 3000,
+    },
 })
