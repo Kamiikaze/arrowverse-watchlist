@@ -1,7 +1,7 @@
-import { acceptHMRUpdate, defineStore } from 'pinia'
+import { defineStore } from 'pinia'
 import { arrayRemove, arrayUnion, getDoc, updateDoc } from 'firebase/firestore'
-import importedEpisodes from '@/assets/episodes.json'
-import { docRef } from '@/plugins/firebase'
+import importedShows from '@/assets/episodes.json'
+import { docRef } from '@/plugins/firebase.ts'
 
 const useAppStore = defineStore('app', {
     state: () => ({
@@ -10,8 +10,8 @@ const useAppStore = defineStore('app', {
             series: [],
             watched: null,
             itemsPerPage: 10,
+            sortByOrder: 'asc',
         },
-        showsData: null,
         isReady: false,
         loginDialog: false,
         language: 'en-US',
@@ -121,6 +121,9 @@ const useAppStore = defineStore('app', {
                 ],
             },
         ],
+        shows: [],
+        episodeList: [],
+        showsUpdatedAt: null,
     }),
 
     actions: {
@@ -136,7 +139,7 @@ const useAppStore = defineStore('app', {
         async updateWatchedState(item, filter) {
             // Create a new object with the id and the current timestamp
             const watchedItem = {
-                id: item.raw.id,
+                lid: item.raw.lid,
                 seenAt: Date.now(),
             }
             console.log(watchedItem, filter)
@@ -146,7 +149,7 @@ const useAppStore = defineStore('app', {
 
             // Check if the item is already in the watchlist
             const existingItemIndex = watchlistData.findIndex(
-                (wli) => wli.id === watchedItem.id
+                (wli) => wli.lid === watchedItem.lid
             )
 
             if (existingItemIndex === -1) {
@@ -158,11 +161,13 @@ const useAppStore = defineStore('app', {
                 })
             } else {
                 // If the item is found in the watchlist, remove it
-                this.removeItemFromWatchlist(watchedItem)
                 await updateDoc(docRef.watchlist, {
                     list: arrayRemove(watchlistData[existingItemIndex]),
                     filters: filter,
+                }).catch((error) => {
+                    console.error('Error removing document: ', error)
                 })
+                this.removeItemFromWatchlist(watchedItem)
             }
         },
         async fetchWatchlist() {
@@ -172,11 +177,13 @@ const useAppStore = defineStore('app', {
             this.filters = watchlistData.filters
             return watchlistData.list
         },
-        findItemInWatchlist(item) {
-            return this.watchlist.find((wli) => wli.id === item.id)
+        findItemInWatchlist(lid) {
+            return this.watchlist.find((wli) => wli.lid === lid)
         },
         removeItemFromWatchlist(item) {
-            const index = this.watchlist.findIndex((wli) => wli.id === item.id)
+            const index = this.watchlist.findIndex(
+                (wli) => wli.lid === item.lid
+            )
             this.watchlist.splice(index, 1)
         },
         toggleDialog() {
@@ -212,32 +219,69 @@ const useAppStore = defineStore('app', {
 
             switch (provider) {
                 case 'Amazon':
-                    return `https://www.amazon.de/gp/video/detail/${id}/ref=atv_dp_season_select_s${season}`
+                    return `https://amazon.de/gp/video/detail/${id}/ref=atv_dp_season_select_s${season}`
                 case 'Netflix':
-                    return `https://www.netflix.com/title/${parsedId}`
+                    return `https://netflix.com/title/${parsedId}`
                 case 'Sto':
-                    return `https://www.s.to/serie/stream/${stoName}/staffel-${season}/episode-${episode}`
+                    return `https://s.to/serie/stream/${stoName}/staffel-${season}/episode-${episode}`
                 default:
                     return null
             }
+        },
+        async fetchShows() {
+            if (import.meta.env.VITE_IS_DEV) {
+                console.log('Running in dev mode, using mock data')
+                this.shows = importedShows
+                this.showsUpdatedAt = importedShows[0].created
+            } else {
+                console.log('Running in production mode, fetching data')
+                const showsData = await getDoc(docRef.shows)
+                console.log('Fetched shows data', showsData.data())
+                this.shows = showsData.data().data
+                this.showsUpdatedAt = showsData.data().updatedAt
+                console.log('Fetched shows', this.shows.length)
+            }
+            this.fetchEpisodes()
+        },
+        fetchEpisodes() {
+            console.log('Fetching episodes')
+            const episodeList = this.shows.map((show) => {
+                return show.raw.seasons.map((season) => {
+                    return season.episodes.map((episode) => {
+                        const lid = `${show.raw.id}-${season.season_number}-${episode.episode_number}`
+                        const watched = this.findItemInWatchlist(lid)
+                        return {
+                            ...episode,
+                            lid,
+                            show: show.raw.name,
+                            season_number: season.season_number,
+                            watched: !!watched,
+                            seenAt: watched?.seenAt,
+                            providers: this.getProviderList(lid),
+                        }
+                    })
+                })
+            })
+
+            // Array of all episodes from all seasons of all shows
+            const flatEpisodeList = episodeList.flat(3)
+            // Array of all episodes from all seasons of all shows, sorted by airdate
+            const sortedEpisodeList = flatEpisodeList
+                .filter((episode) => episode.season_number !== 0)
+                .sort((a, b) => {
+                    return a.air_date - b.air_date
+                })
+            this.episodeList = sortedEpisodeList
+            console.log('Fetched episodes', this.episodeList.length)
+            return sortedEpisodeList
         },
     },
     getters: {
         getWatchlist(state) {
             return state.watchlist
         },
-        getEpisodes() {
-            return importedEpisodes.map((ep) => {
-                const watched = this.findItemInWatchlist(ep)
-                return {
-                    ...ep,
-                    watched: !!watched,
-                    seenAt: watched?.seenAt,
-                    providers: this.getProviderList(
-                        `${ep.id}-${ep.season}-${ep.episode}`
-                    ),
-                }
-            })
+        getEpisodes(state) {
+            return state.episodeList
         },
         getProviderIDs(state) {
             return state.providerIDs
@@ -247,9 +291,5 @@ const useAppStore = defineStore('app', {
         },
     },
 })
-
-if (import.meta.hot) {
-    import.meta.hot.accept(acceptHMRUpdate(useAppStore, import.meta.hot))
-}
 
 export default useAppStore

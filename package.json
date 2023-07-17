@@ -1,19 +1,25 @@
 {
   "name": "arrowverse-watchlist",
   "description": "A watchlist for the Arrowverse",
-  "version": "0.0.4",
+  "version": "0.0.5",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ext .js,.ts,.vue",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "fb:deploy-preview": "firebase hosting:channel:deploy preview_name",
+    "fb:deploy-rules": "firebase deploy --only firestore:rules"
   },
   "dependencies": {
+    "@awesomegroup/watch-con": "file:awesomegroup-watch-con-0.3.0.tgz",
     "@mdi/font": "7.2.96",
     "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
     "firebase": "^10.0.0",
+    "firebase-admin": "^11.10.1",
     "pinia": "^2.1.4",
     "roboto-fontface": "*",
     "vue": "^3.3.4",

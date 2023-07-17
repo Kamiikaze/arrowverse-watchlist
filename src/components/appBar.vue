@@ -1,6 +1,9 @@
 <template>
     <v-app-bar>
-        <v-app-bar-title>Arrowverse-Watchlist</v-app-bar-title>
+        <v-app-bar-title
+            >Arrowverse-Watchlist
+            <span class="text-subtitle-2">v{{ version }}</span></v-app-bar-title
+        >
 
         <v-spacer></v-spacer>
 
@@ -17,7 +20,7 @@
             </template>
 
             <v-list>
-                <v-list-item value="#">
+                <v-list-item value="#" disabled>
                     <template v-slot:prepend>
                         <v-icon class="mr-4" icon="mdi-cog"></v-icon>
                     </template>
@@ -33,9 +36,14 @@
             </v-list>
         </v-menu>
 
-        <v-btn icon @click="toggleTheme">
-            <v-icon>mdi-theme-light-dark</v-icon>
-        </v-btn>
+        <v-tooltip location="bottom">
+            <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" icon @click="toggleTheme">
+                    <v-icon>mdi-theme-light-dark</v-icon>
+                </v-btn>
+            </template>
+            <span>Toggle Darkmode</span>
+        </v-tooltip>
     </v-app-bar>
 </template>
 
@@ -54,15 +62,19 @@ export default {
             { title: 'Veröffentlicht', align: 'start', key: 'published' },
             { title: 'Gesehen', key: 'watched' },
         ],
+        version: process.env.PACKAGE_VERSION,
     }),
     methods: {
         ...mapActions(useAppStore, ['toggleDialog']),
-        ...mapActions(useAuthStore, ['logoutUser']),
+        ...mapActions(useAuthStore, ['logoutUser', 'updateUserSettings']),
         toggleTheme() {
             this.$vuetify.theme.global.name = this.$vuetify.theme.global.current
                 .dark
                 ? 'light'
                 : 'dark'
+            this.updateUserSettings({
+                theme: this.$vuetify.theme.global.name,
+            })
         },
     },
     computed: {

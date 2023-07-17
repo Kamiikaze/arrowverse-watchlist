@@ -1,5 +1,5 @@
-import { acceptHMRUpdate, defineStore } from 'pinia'
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { defineStore } from 'pinia'
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import {
     createUserWithEmailAndPassword,
     sendEmailVerification,
@@ -10,7 +10,7 @@ import {
     fbAuth,
     usersCollection,
     watchlistsCollection,
-} from '@/plugins/firebase'
+} from '@/plugins/firebase.ts'
 
 // eslint-disable-next-line import/prefer-default-export
 const useAuthStore = defineStore('auth', {
@@ -58,12 +58,10 @@ const useAuthStore = defineStore('auth', {
 
                 // Create user document
                 await setDoc(doc(usersCollection, userCredential.user.uid), {
-                    email: userCredential.user.email,
                     settings: {
                         language: 'en-US',
-                        theme: 'light',
+                        theme: 'dark',
                     },
-                    createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp(),
                 })
                 await setDoc(
@@ -126,6 +124,28 @@ const useAuthStore = defineStore('auth', {
                 return false
             }
         },
+        async fetchAdditionalUserData() {
+            // Fetch additional user data from Firestore
+            const userDoc = await getDoc(docRef.user)
+            if (userDoc.exists()) {
+                const userData = userDoc.data().settings
+                this.user = {
+                    ...this.user,
+                    settings: userData,
+                }
+                return true
+            }
+            // doc.data() will be undefined in this case
+            console.log('No such document!')
+            return false
+        },
+        async updateUserSettings(settings) {
+            // Update user settings in Firestore
+            await setDoc(docRef.user, {
+                settings,
+                updatedAt: serverTimestamp(),
+            })
+        },
         logoutUser() {
             fbAuth
                 .signOut()
@@ -149,9 +169,5 @@ const useAuthStore = defineStore('auth', {
         },
     },
 })
-
-if (import.meta.hot) {
-    import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
-}
 
 export default useAuthStore

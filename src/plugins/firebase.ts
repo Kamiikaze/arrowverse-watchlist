@@ -25,11 +25,21 @@ const fbDb = getFirestore(fbApp)
 // Collection references
 const usersCollection = collection(fbDb, 'users')
 const watchlistsCollection = collection(fbDb, 'watchlist')
+const showsCollection = collection(fbDb, 'shows')
 
 // Document references
 const docRef = {
     user: DocumentReference,
     watchlist: DocumentReference,
+    shows: DocumentReference,
 }
 
-export { fbApp, fbAuth, fbDb, usersCollection, watchlistsCollection, docRef }
+export {
+    fbApp,
+    fbAuth,
+    fbDb,
+    usersCollection,
+    watchlistsCollection,
+    showsCollection,
+    docRef,
+}
