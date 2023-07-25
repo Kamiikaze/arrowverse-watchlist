@@ -1,10 +1,10 @@
-import config from 'dotenv'
-import admin from 'firebase-admin'
 import ApiCon, { NodeCon } from '@awesomegroup/watch-con'
+import admin from 'firebase-admin'
+import { config } from 'dotenv'
 import fs from 'fs'
 
 // For local development
-config.config({ path: './.env' })
+config({ path: './.env' })
 
 // Parse the Firebase Admin SDK key JSON
 const serviceAccount = JSON.parse(
@@ -59,22 +59,29 @@ if (!res) {
 
 console.log('Getting all shows metadata')
 
-const shows = []
+const shows = {
+    data: [],
+    updatedAt: new Date(),
+}
 for (const show of series) {
     console.log(`Getting show ${show.name} (${show.id})`)
     const showMet = await api.getFullShowMet(show.id)
-    shows.push(showMet.data)
+    shows.data.push(showMet.data)
     console.log("Finished getting show's metadata\n")
 }
 
 console.log('Finished getting all shows metadata')
 
-await updateFirestoreDocument(shows)
+// await updateFirestoreDocument(shows)
 
 // Log to file for local development
-if (process.env.VITE_IS_DEV) {
-    fs.writeFile('episodes.json', JSON.stringify(shows), (err) => {
-        if (err) throw err
-        console.log('Data written to file')
-    })
+if (process.env.IS_DEV) {
+    fs.writeFile(
+        './api/local/episodes.json',
+        JSON.stringify(shows, null, 2),
+        (err) => {
+            if (err) throw err
+            console.log('Data written to file')
+        }
+    )
 }

@@ -1,10 +1,27 @@
 <template>
     <v-app-bar>
-        <v-app-bar-title
-            >Arrowverse-Watchlist
-            <span class="text-subtitle-2">v{{ version }}</span></v-app-bar-title
-        >
+        <v-app-bar-title>
+            <span>
+                Arrowverse-Watchlist
+                <v-chip size="small" variant="plain"> v{{ version }} </v-chip>
+            </span>
+            <v-btn
+                class="ma-0 pa-0"
+                variant="text"
+                rounded
+                :min-width="32"
+                href="https://github.com/Kamiikaze/arrowverse-watchlist"
+            >
+                <v-img
+                    src="/src/assets/Github_icon.svg"
+                    height="32"
+                    width="32"
+                    aspect-ratio="1/1"
+                ></v-img>
+            </v-btn>
+        </v-app-bar-title>
 
+        <v-spacer></v-spacer>
         <v-spacer></v-spacer>
 
         <v-menu :open-on-click="isLoggedIn">

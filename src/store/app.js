@@ -229,16 +229,18 @@ const useAppStore = defineStore('app', {
             }
         },
         async fetchShows() {
-            if (import.meta.env.VITE_IS_DEV) {
+            if (import.meta.env.DEV) {
                 console.log('Running in dev mode, using mock data')
-                this.shows = importedShows
-                this.showsUpdatedAt = importedShows[0].created
+                this.shows = importedShows.data
+                this.showsUpdatedAt = importedShows.updatedAt
             } else {
                 console.log('Running in production mode, fetching data')
                 const showsData = await getDoc(docRef.shows)
                 console.log('Fetched shows data', showsData.data())
                 this.shows = showsData.data().data
-                this.showsUpdatedAt = showsData.data().updatedAt
+                this.showsUpdatedAt = new Date(
+                    showsData.data().updatedAt.seconds * 1000
+                )
                 console.log('Fetched shows', this.shows.length)
             }
             this.fetchEpisodes()

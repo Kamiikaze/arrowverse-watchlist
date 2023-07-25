@@ -15,7 +15,8 @@ const version = JSON.parse(packageJson).version || 0
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    //base: '/arrowverse-watchlist/',
+    base: '/',
+    publicDir: "./public",
     plugins: [
         vue({
             template: { transformAssetUrls },
