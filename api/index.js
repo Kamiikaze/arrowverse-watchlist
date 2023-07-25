@@ -4,7 +4,7 @@ import ApiCon, { NodeCon } from '@awesomegroup/watch-con'
 import fs from 'fs'
 
 // For local development
-config.config({ path: '../.env' })
+config.config({ path: './.env' })
 
 // Parse the Firebase Admin SDK key JSON
 const serviceAccount = JSON.parse(
