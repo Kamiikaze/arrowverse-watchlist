@@ -1,9 +1,11 @@
 <template>
     <v-app-bar>
-        <v-app-bar-title
-            >Arrowverse-Watchlist
-            <span class="text-subtitle-2">v{{ version }}</span></v-app-bar-title
-        >
+        <v-app-bar-title>
+            <span>
+                Arrowverse-Watchlist
+                <v-chip size="small" variant="plain"> v{{ version }} </v-chip>
+            </span>
+        </v-app-bar-title>
 
         <v-spacer></v-spacer>
 

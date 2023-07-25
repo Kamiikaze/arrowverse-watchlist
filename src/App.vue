@@ -29,11 +29,38 @@
             </v-alert>
             <user-auth />
             <series-table />
-            <p>{{ getRelativeTime(showsUpdatedAt) }}</p>
-            <p>
-                Icons by <a href="https://icons8.com" target="_blank">Icons8</a>
-            </p>
         </v-main>
+        <v-footer app elevation="4">
+            <v-row class="text-subtitle-2">
+                <v-col>
+                    <span>
+                        Refreshed:
+                        {{ getRelativeTime(showsUpdatedAt) }}
+                    </span>
+                </v-col>
+                <v-col></v-col>
+                <v-col class="text-right">
+                    <a
+                        v-if="browserLanguage === 'de-DE'"
+                        href="/privacy-de.html"
+                        target="_blank"
+                    >
+                        Datenschutzerklärung
+                    </a>
+                    <a v-else href="/privacy-en.html" target="_blank">
+                        Privacy Policy
+                    </a>
+                </v-col>
+                <v-col class="text-right">
+                    <span>
+                        Provider-Icons by
+                        <a href="https://icons8.com" target="_blank">
+                            Icons8
+                        </a>
+                    </span>
+                </v-col>
+            </v-row>
+        </v-footer>
     </v-app>
 </template>
 
