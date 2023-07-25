@@ -130,9 +130,9 @@ export default {
         visible2: false,
         waiting: false,
         userAuth: {
-            email: 'test@mail.de',
-            pw: '!test123',
-            pwconfirm: '!test123',
+            email: '',
+            pw: '',
+            pwconfirm: '',
         },
         rules: {
             required: (value) => !!value || 'Required.',

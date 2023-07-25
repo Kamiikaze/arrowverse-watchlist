@@ -38,8 +38,8 @@
                         {{ getRelativeTime(showsUpdatedAt) }}
                     </span>
                 </v-col>
-                <v-col></v-col>
-                <v-col class="text-right">
+                <v-col class="text-center"> </v-col>
+                <v-col class="text-center">
                     <a
                         v-if="browserLanguage === 'de-DE'"
                         href="/privacy-de.html"
@@ -53,7 +53,7 @@
                 </v-col>
                 <v-col class="text-right">
                     <span>
-                        Provider-Icons by
+                        Icons by
                         <a href="https://icons8.com" target="_blank">
                             Icons8
                         </a>
