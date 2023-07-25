@@ -24,6 +24,10 @@ pnpm-debug.log*
 *.sw?
 
 # Firebase
+.firebase
 .firebaserc
 firebase.json
 firestore.rules
+
+# Local Api Data
+api/local*

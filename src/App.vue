@@ -121,3 +121,7 @@ onAuthStateChanged(fbAuth, async (user) => {
     }
 })
 </script>
+
+<style lang="sass">
+@import '../node_modules/@fontsource/roboto/index.css'
+</style>

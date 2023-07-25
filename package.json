@@ -1,7 +1,7 @@
 {
   "name": "arrowverse-watchlist",
   "description": "A watchlist for the Arrowverse",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@awesomegroup/watch-con": "file:awesomegroup-watch-con-0.3.0.tgz",
+    "@fontsource/roboto": "^5.0.5",
     "@mdi/font": "7.2.96",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
@@ -22,6 +23,7 @@
     "firebase-admin": "^11.10.1",
     "pinia": "^2.1.4",
     "roboto-fontface": "*",
+    "sass": "^1.64.1",
     "vue": "^3.3.4",
     "vuetify": "^3.3.8",
     "webfontloader": "^1.6.28"
