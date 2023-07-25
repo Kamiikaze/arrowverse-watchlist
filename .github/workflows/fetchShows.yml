@@ -1,0 +1,27 @@
+name: Update Firestore with API Data
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at midnight (UTC)
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  update_firestore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run script to update Firestore
+        env:
+          FIREBASE_ADMIN_SDK_KEY: ${{ secrets.FIREBASE_ADMIN_SDK_KEY }}
+          API_URL: "https://example-api.com/data" # Replace with your API URL
+        run: node /api/index.js

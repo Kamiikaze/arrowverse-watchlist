@@ -1,44 +1,123 @@
 <template>
-  <v-app>
-    <app-bar/>
-    <v-main>
-      <user-auth/>
-      <series-table/>
-      <p>Icons by <a href="https://icons8.com"
-                     target="_blank">Icons8</a>
-      </p>
-    </v-main>
-  </v-app>
+    <v-app>
+        <app-bar />
+        <v-main v-if="!appStore.isReady">
+            <v-progress-linear
+                v-model="progress.value"
+                bg-color="pink-lighten-3"
+                color="pink-lighten-1"
+                stream
+            ></v-progress-linear>
+            <p class="ma-auto" style="width: fit-content">
+                {{ progress.text }}
+            </p>
+        </v-main>
+        <v-main v-else>
+            <v-alert
+                v-if="isLoggedIn"
+                type="info"
+                closable
+                density="compact"
+                class="my-2 mx-1"
+            >
+                <v-alert-text>
+                    Create a <u><b>free Account</b></u
+                    >, to save your Filters, open Episodes on your Streaming
+                    Service, <u><b>enable Watchlist</b></u> Feature and more
+                    comming soon!
+                </v-alert-text>
+            </v-alert>
+            <user-auth />
+            <series-table />
+            <p>{{ getRelativeTime(showsUpdatedAt) }}</p>
+            <p>
+                Icons by <a href="https://icons8.com" target="_blank">Icons8</a>
+            </p>
+        </v-main>
+    </v-app>
 </template>
 
 <script setup>
-import {useAppStore} from "@/store/app";
-import {useAuthStore} from "@/store/auth";
+import { onAuthStateChanged } from 'firebase/auth'
+import { doc } from 'firebase/firestore'
+import { useTheme } from 'vuetify'
+import { ref } from 'vue'
+import useAppStore from '@/store/app'
+import useAuthStore from '@/store/auth'
 
-import {auth} from "@/plugins/firebase";
-import {onAuthStateChanged} from "firebase/auth";
+import {
+    docRef,
+    fbAuth,
+    showsCollection,
+    usersCollection,
+    watchlistsCollection,
+} from '@/plugins/firebase.ts'
+import AppBar from '@/components/appBar.vue'
+import UserAuth from '@/components/userAuth/index.vue'
+import SeriesTable from '@/components/seriesTable.vue'
+import { getRelativeTime } from '@/lib/utils.js'
 
-import SeriesTable from "@/components/seriesTable.vue";
-import AppBar from "@/components/appBar.vue";
-import UserAuth from "@/components/userAuth/index.vue";
+const progress = ref({ value: 0, text: 'Loading Stores..' })
 
 const appStore = useAppStore()
 const authStore = useAuthStore()
 
-const browserLanguage = navigator.language || navigator.userLanguage;
+const { isLoggedIn } = authStore
+let showsUpdatedAt
+
+progress.value = { value: 20, text: 'Loading Vuetify..' }
+
+const theme = useTheme()
+
+progress.value = { value: 30, text: 'Defining App Language..' }
+
+const browserLanguage = navigator.language || navigator.userLanguage
 appStore.setAppLanguage(browserLanguage)
-console.log("Set App Language to:", browserLanguage)
+console.log('Set App Language to:', browserLanguage)
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    auth.useDeviceLanguage();
-    authStore.user = user
-    console.log("User logged in: ", user)
-  } else {
-    // User is signed out
-    console.log("User logged out")
-  }
-});
+progress.value = { value: 40, text: 'Checking User Authentication..' }
 
+docRef.shows = doc(showsCollection, 'allShows')
 
+onAuthStateChanged(fbAuth, async (user) => {
+    if (user) {
+        progress.value = { value: 50, text: 'Loggin in User..' }
+        authStore.user = user
+        fbAuth.useDeviceLanguage()
+
+        docRef.user = doc(usersCollection, fbAuth.currentUser.uid)
+        docRef.watchlist = doc(watchlistsCollection, fbAuth.currentUser.uid)
+
+        progress.value = { value: 55, text: 'Loading additional Userdata..' }
+
+        await authStore.fetchAdditionalUserData()
+        theme.global.name.value = authStore.user.settings.theme
+
+        progress.value = { value: 65, text: 'Fetching Watchlist..' }
+
+        await appStore.fetchWatchlist()
+
+        progress.value = { value: 80, text: 'Fetching Shows and Episodes..' }
+
+        await appStore.fetchShows()
+        showsUpdatedAt = appStore.showsUpdatedAt
+
+        progress.value = { value: 100, text: 'Ready! Starting App..' }
+
+        appStore.isReady = true
+        console.log('User logged in: ', user)
+    } else {
+        // User is signed out
+        console.log('User not logged in.')
+        authStore.user = null
+        appStore.watchlist = []
+        progress.value = { value: 50, text: 'Fetching Shows and Episodes..' }
+        await appStore.fetchShows()
+        showsUpdatedAt = appStore.showsUpdatedAt
+
+        progress.value = { value: 100, text: 'Ready! Starting App..' }
+
+        appStore.isReady = true
+    }
+})
 </script>

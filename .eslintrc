@@ -1,0 +1,55 @@
+{
+    "root": true,
+    "env": {
+        "node": true
+    },
+    "extends": [
+        "airbnb",
+        "plugin:vue/vue3-essential",
+        "eslint:recommended",
+        "prettier",
+        "plugin:prettier/recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 2022,
+        "sourceType": "module"
+    },
+    "plugins": ["vue", "prettier"],
+    "settings": {
+        "node": {
+            "paths": ["src"],
+            "extensions": [".js", ".jsx", ".ts", ".tsx"]
+        }
+    },
+    "rules": {
+        "no-plusplus": "warn",
+        "no-console": "off",
+        "no-restricted-syntax": "warn",
+        "no-underscore-dangle": "warn",
+        "no-await-in-loop": "warn",
+        "class-methods-use-this": "warn",
+        "linebreak-style": "off",
+        "no-restricted-properties": "warn",
+        "no-unused-vars": "warn",
+        "react-hooks/rules-of-hooks": "off",
+        "import/no-unresolved": "off",
+        "import/extensions": [
+            "off",
+            "ignorePackages",
+            {
+                "js": "never",
+                "jsx": "never",
+                "ts": "never",
+                "tsx": "never",
+                "d.ts": "never"
+            }
+        ],
+        "prettier/prettier": [
+            "warn",
+            {
+                "endOfLine": "auto",
+                "singleQuote": true
+            }
+        ]
+    }
+}
