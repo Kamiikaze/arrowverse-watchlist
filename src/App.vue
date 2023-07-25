@@ -42,12 +42,12 @@
                 <v-col class="text-center">
                     <a
                         v-if="browserLanguage === 'de-DE'"
-                        href="/privacy-de.html"
+                        href="./privacy-de.html"
                         target="_blank"
                     >
                         Datenschutzerklärung
                     </a>
-                    <a v-else href="/privacy-en.html" target="_blank">
+                    <a v-else href="./privacy-en.html" target="_blank">
                         Privacy Policy
                     </a>
                 </v-col>

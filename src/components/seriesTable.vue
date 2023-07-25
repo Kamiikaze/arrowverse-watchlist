@@ -153,7 +153,7 @@
                             @click="openUrl(item, provider); updateEntry(item);"
                         >
                             <v-img
-                                :src="`/src/assets/${provider.name}_icon.svg`"
+                                :src="`./assets/${provider.name}_icon.svg`"
                                 height="24"
                                 width="24"
                             ></v-img>

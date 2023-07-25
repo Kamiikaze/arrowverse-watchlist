@@ -13,7 +13,7 @@
                 href="https://github.com/Kamiikaze/arrowverse-watchlist"
             >
                 <v-img
-                    src="/src/assets/Github_icon.svg"
+                    src="@/assets/Github_icon.svg"
                     height="32"
                     width="32"
                     aspect-ratio="1/1"

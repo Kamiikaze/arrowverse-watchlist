@@ -1,8 +1,13 @@
 
 # Arrowverse Watchlist
+<div style="text-align: center;">
+
 ![GitHub package.json version (subfolder of monorepo)](https://img.shields.io/github/package-json/v/kamiikaze/arrowverse-watchlist)
 [![CodeFactor](https://www.codefactor.io/repository/github/kamiikaze/arrowverse-watchlist/badge)](https://www.codefactor.io/repository/github/kamiikaze/arrowverse-watchlist)
+[![Deploy to GitHub Pages](https://github.com/Kamiikaze/arrowverse-watchlist/actions/workflows/deploy.yml/badge.svg?branch=master)](https://github.com/Kamiikaze/arrowverse-watchlist/actions/workflows/deploy.yml)
 [![Update Firestore with API Data](https://github.com/Kamiikaze/arrowverse-watchlist/actions/workflows/fetchShows.yml/badge.svg)](https://github.com/Kamiikaze/arrowverse-watchlist/actions/workflows/fetchShows.yml)
+
+</div>
 
 This is a project based on [AceFire6's Arrowverse series ordering](https://github.com/AceFire6/ordered-arrowverse).
 

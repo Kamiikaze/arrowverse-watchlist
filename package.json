@@ -1,7 +1,7 @@
 {
   "name": "arrowverse-watchlist",
   "description": "A watchlist for the Arrowverse",
-  "version": "0.0.6",
+  "version": "0.1.2",
   "type": "module",
   "scripts": {
     "dev": "vite",

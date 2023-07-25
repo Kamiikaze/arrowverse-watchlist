@@ -6,22 +6,47 @@ on:
       - 'v*'  # Trigger only when a new version tag is created
   workflow_dispatch:  # Allow manual triggering
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  deploying:
+  # Build job
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Build and deploy to GitHub Pages
-        run: |
-          npm run build
-          npx gh-pages -d dist
+      - name: Build with Vite
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./dist
+
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
