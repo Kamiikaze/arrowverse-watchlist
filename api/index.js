@@ -1,9 +1,10 @@
-import admin from 'firebase-admin'
 import ApiCon, { NodeCon } from '@awesomegroup/watch-con'
+import admin from 'firebase-admin'
+import { config } from 'dotenv'
 import fs from 'fs'
 
 // For local development
-// config.config({ path: './.env' })
+config({ path: './.env' })
 
 // Parse the Firebase Admin SDK key JSON
 const serviceAccount = JSON.parse(
