@@ -24,4 +24,4 @@ jobs:
         env:
           FIREBASE_ADMIN_SDK_KEY: ${{ secrets.FIREBASE_ADMIN_SDK_KEY }}
           API_URL: "https://example-api.com/data" # Replace with your API URL
-        run: node /api/index.js
+        run: node ./api/index.js
