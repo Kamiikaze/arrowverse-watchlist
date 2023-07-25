@@ -26,4 +26,4 @@ jobs:
           API_URL: ${{ secrets.API_URL }}
           API_USER: ${{ secrets.API_USER }}
           API_TOKEN: ${{ secrets.API_TOKEN }}
-        run: node /api/index.js
+        run: node ./api/index.js
