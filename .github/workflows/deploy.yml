@@ -8,7 +8,6 @@ on:
 
 jobs:
   deploying:
-    needs: update_firestore
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,7 +21,12 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build and deploy to GitHub Pages
+      - name: Build and deploy
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm run build
-          npx gh-pages -d dist
+          git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          npx gh-pages -d dist -u "github-actions-bot <support+actions@github.com>"
