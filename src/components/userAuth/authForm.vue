@@ -171,7 +171,6 @@ export default {
                 this.registerUser(this.userAuth.email, this.userAuth.pw).then(
                     (register) => {
                         if (register) {
-                            this.toggleDialog()
                             this.waiting = false
                         } else {
                             this.waiting = false

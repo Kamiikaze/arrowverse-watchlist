@@ -106,6 +106,7 @@ docRef.shows = doc(showsCollection, 'allShows')
 
 onAuthStateChanged(fbAuth, async (user) => {
     if (user) {
+        if (!user.emailVerified) return
         progress.value = { value: 50, text: 'Loggin in User..' }
         authStore.user = user
         fbAuth.useDeviceLanguage()

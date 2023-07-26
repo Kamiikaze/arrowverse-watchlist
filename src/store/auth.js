@@ -68,7 +68,12 @@ const useAuthStore = defineStore('auth', {
                     doc(watchlistsCollection, userCredential.user.uid),
                     {
                         list: [],
-                        filters: [],
+                        filters: {
+                            series: [],
+                            watched: null,
+                            itemsPerPage: 10,
+                            sortByOrder: 'asc',
+                        },
                     }
                 )
                 console.log('Documents successfully written!')

@@ -113,6 +113,7 @@
             :items="filteredItems"
             :items-per-page="activeFilters.itemsPerPage"
             :loading="waitForData"
+            :sort-by="[{ key: 'air_date', order: activeFilters.sortByOrder }]"
             class="rounded"
             elevation="2"
             fixed-header
