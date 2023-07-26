@@ -20,17 +20,15 @@
                 density="compact"
                 class="my-2 mx-1"
             >
-                <v-alert-text>
-                    Create a <u><b>free Account</b></u
-                    >, to save your Filters, open Episodes on your Streaming
-                    Service, <u><b>enable Watchlist</b></u> Feature and more
-                    comming soon!
-                </v-alert-text>
+                Create a <u><b>free Account</b></u
+                >, to save your Filters, open Episodes on your Streaming
+                Service, <u><b>enable Watchlist</b></u> Feature and more comming
+                soon!
             </v-alert>
             <user-auth />
             <series-table />
         </v-main>
-        <v-footer app elevation="4">
+        <v-footer :app="true" elevation="4">
             <v-row class="text-subtitle-2">
                 <v-col>
                     <span>

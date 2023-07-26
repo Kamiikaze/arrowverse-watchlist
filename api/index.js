@@ -72,7 +72,7 @@ for (const show of series) {
 
 console.log('Finished getting all shows metadata')
 
-// await updateFirestoreDocument(shows)
+await updateFirestoreDocument(shows)
 
 // Log to file for local development
 if (process.env.IS_DEV) {
