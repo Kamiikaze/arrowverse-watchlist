@@ -271,7 +271,7 @@ const useAppStore = defineStore('app', {
             const sortedEpisodeList = flatEpisodeList
                 .filter((episode) => episode.season_number !== 0)
                 .sort((a, b) => {
-                    return a.air_date - b.air_date
+                    return a.air_date.localeCompare(b.air_date)
                 })
             this.episodeList = sortedEpisodeList
             console.log('Fetched episodes', this.episodeList.length)
