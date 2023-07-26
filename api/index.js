@@ -23,10 +23,7 @@ const db = admin.firestore()
 async function updateFirestoreDocument(data) {
     try {
         const docRef = db.collection('shows').doc('allShows')
-        await docRef.update({
-            data,
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-        })
+        await docRef.update(data)
         console.log('Firestore document updated successfully')
     } catch (error) {
         console.error('Error updating Firestore document:', error.message)
