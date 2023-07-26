@@ -113,11 +113,13 @@
             :items="filteredItems"
             :items-per-page="activeFilters.itemsPerPage"
             :loading="waitForData"
-            :sort-by="[{ key: 'air_date', order: activeFilters.sortByOrder }]"
             class="rounded"
             elevation="2"
             fixed-header
         >
+            <template v-slot:[`item.index`]="{ item }">
+                {{ item.index + 1 }}
+            </template>
             <template v-slot:[`item.watched`]="{ item }">
                 <v-checkbox-btn
                     v-model="item.raw.watched"
@@ -179,6 +181,13 @@ export default {
             order: 'asc',
         },
         headers: [
+            {
+                title: '#',
+                align: 'center',
+                key: 'index',
+                width: '50px',
+                sortable: false,
+            },
             {
                 title: 'Serie',
                 align: 'start',
